@@ -31,59 +31,6 @@ uses
   System.IOUtils, Delphi.Serialization.Tests.Testdata, Spring.Container,
   System.Rtti;
 
-//procedure TMainTests.deserialize;
-//var
-//  person: IPerson;
-//  output, input: TStringStream;
-//  facade: ISerializationFacade<IPerson>;
-//begin
-//  output := TStringStream.Create;
-//  input := TStringStream.Create;
-//  input.WriteString('<?xml version="1.0"?> <Person serialVersionUID="{554AFD7B-2053-428D-9EC9-184B40B8BA2E}"> <FirsNameElement>Aleksandar</FirsNameElement>');
-//  input.WriteString('<LastName>Damjanovic</LastName> <Age>28</Age> <FirstChild serialVersionUID="{1BE55CDB-19D8-46CE-9707-FD05BFF7A01D}"> <FirsNameElement>Dirk</FirsNameElement> <LastName>Koehler</LastName> <Age>22</Age> </FirstChild> </Person>');
-//
-//  person := TPerson.Create;
-//
-//  facade := TSerializationFacade<IPerson>.Create;
-//  facade.Deserialize(person, input);
-//  facade.Serialize(person, output);
-//  TFile.AppendAllText(GetFilePathToTestFile('deserialize.xml'), output.DataString);
-//end;
-//
-//procedure TMainTests.dsharp_TestSerializeSimpleInterfacedObjectToString;
-//var
-//  person: IPerson;
-//  child: IChild;
-//  output: TStringStream;
-//  facade: ISerializationFacade<IPerson>;
-//begin
-//  person := TPerson.Create;
-//  person.FirstName := 'Aleksandar';
-//  person.LastName := 'Damjanovic';
-//  person.Age := 28;
-//  person.HasChilds := true;
-//
-//  child := TChild.Create;
-//  child.FirstName := 'Dirk';
-//  child.LastName := 'Koehler';
-//  child.Age := 22;
-//  child.HasChilds := false;
-//
-//  person.Child.Add(child);
-//  person.Child.Add(child);
-//  person.Child.Add(child);
-//  person.FirstChild := child;
-//
-//  output := TStringStream.Create;
-//
-////  TSerializationFacade.Serialize<IPerson>.Setup.FromType(person).ToOutput(output).Execute;
-//  facade := TSerializationFacade<IPerson>.Create;
-//  facade.Serialize(person, output);
-//  Assert.AreNotEqual('', output.DataString);
-//
-//  TFile.AppendAllText(GetFilePathToTestFile('serialize.xml'), output.DataString);
-//end;
-
 function TMainTests.GetFilePathToTestFile(const AFileName: string): string;
 var
   appPath: String;
