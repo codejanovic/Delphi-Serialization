@@ -16,7 +16,8 @@ uses
   Delphi.Serialization.Tests.Testdata.SimpleInterfacedObject in '..\testdata\Delphi.Serialization.Tests.Testdata.SimpleInterfacedObject.pas',
   Delphi.Serialization.Tests.Testdata.SimpleObject in '..\testdata\Delphi.Serialization.Tests.Testdata.SimpleObject.pas',
   Delphi.Serialization.XmlValueConverter in '..\Delphi.Serialization.XmlValueConverter.pas',
-  Delphi.Serialization.Tests.Testdata in '..\testdata\Delphi.Serialization.Tests.Testdata.pas';
+  Delphi.Serialization.Tests.Testdata in '..\testdata\Delphi.Serialization.Tests.Testdata.pas',
+  Delphi.Serialization.ExceptionHelper in '..\Delphi.Serialization.ExceptionHelper.pas';
 
 var
   runner : ITestRunner;
