@@ -68,6 +68,7 @@ type
   end;
   {$ENDREGION}
 
+  {$REGION 'Interfaces'}
   ISerializationFormatPrimitiveValueConverter = interface
     ['{BA828678-28AC-4E16-92BF-CD004FF29A4C}']
     function ValueToString(const AValue: TValue): string;
@@ -99,13 +100,33 @@ type
     procedure WriteNodeAttributeOfCurrentNode(const AAttributeName: String; const AAttributeValue: TValue);
   end;
 
+  TSerializationFacade = class;
   //TODO: logger needed?
   ISerializer<T> = interface
+    ['{B56EBFC6-7B46-4C07-9A67-DB26B8F51382}']
     procedure Serialize(const AValue: T);
   end;
 
   IDeserializer<T> = interface
+    ['{2E5BF102-1C98-4FF1-86D5-8540B2F37E3D}']
     procedure Deserialize(const AValue: T);
+  end;
+
+  ISerializationFacade = interface
+    ['{09C43C33-AAE7-4B12-939E-86568C1C73C2}']
+    function Start: TSerializationFacade;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'Facade'}
+  TSerializationFacadeLifecycleDecorator = class(TInterfacedObject, ISerializationFacade)
+  strict protected
+    FSerializationFacade: TSerializationFacade;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    function Start: TSerializationFacade;
   end;
 
   //TODO: access to default instance of each component
@@ -118,8 +139,6 @@ type
     function CreateDefaultFormatReader(const AInput: TStream; const AValueConverter: ISerializationFormatPrimitiveValueConverter): ISerializationFormatReader;
     function CreateDefaultDeserializer<T>(const AFormatReader: ISerializationFormatReader): IDeserializer<T>;
   public
-    constructor Create;
-
     procedure Serialize<T>(const AValue: T; const AOutput: TStream); overload;
     procedure Serialize<T>(const AValue: T; const ACustomFormatWriter: ISerializationFormatWriter); overload;
     procedure Serialize<T>(const AValue: T; const ACustomSerializer: ISerializer<T>); overload;
@@ -128,14 +147,23 @@ type
     procedure DeSerialize<T>(const AValue: T; const ACustomFormatReader: ISerializationFormatReader); overload;
     procedure DeSerialize<T>(const AValue: T; const ACustomDeserializer: IDeSerializer<T>); overload;
   end;
+  {$ENDREGION}
 
-  //TODO: SerializationException Object
+  TSerialization = class abstract
+  public
+    class function CreateSerializationFacade: TSerializationFacade;
+    class function CreateSerializationFacadeDecorator: ISerializationFacade;
+  end;
 
 implementation
 
 uses
-  Delphi.Serialization.XmlValueConverter, Delphi.Serialization.XmlWriter,
-  Delphi.Serialization.XmlReader, Delphi.Serialization.Serializer, Delphi.Serialization.Deserializer;
+  Delphi.Serialization.XmlValueConverter,
+  Delphi.Serialization.XmlWriter,
+  Delphi.Serialization.XmlReader,
+  Delphi.Serialization.Serializer,
+  Delphi.Serialization.Deserializer;
+
 
 { XmlElementAttribute }
 
@@ -151,12 +179,25 @@ begin
   FSerialVersionUID := ASerialVersionUID;
 end;
 
-{ TSerializationFacade<T> }
 
-constructor TSerializationFacade.Create;
+{ TSerializationFacadeLifecycleDecorator }
+
+constructor TSerializationFacadeLifecycleDecorator.Create;
 begin
-
+  FSerializationFacade := TSerializationFacade.Create;
 end;
+
+destructor TSerializationFacadeLifecycleDecorator.Destroy;
+begin
+  FreeAndNil(FSerializationFacade);
+  inherited;
+end;
+
+function TSerializationFacadeLifecycleDecorator.Start: TSerializationFacade;
+begin
+  Result := FSerializationFacade;
+end;
+
 
 procedure TSerializationFacade.Deserialize<T>(const AValue: T; const AInput: TStream);
 var
@@ -210,12 +251,6 @@ begin
   Result := TXmlPrimitiveValueConverter.Create;
 end;
 
-procedure TSerializationFacade.DeSerialize<T>(
-  const AValue: T;
-  const ACustomDeserializer: IDeSerializer<T>);
-begin
-
-end;
 
 procedure TSerializationFacade.Serialize<T>(
   const AValue: T;
@@ -247,6 +282,23 @@ procedure TSerializationFacade.Serialize<T>(
   const ACustomSerializer: ISerializer<T>);
 begin
   ACustomSerializer.Serialize(AValue);
+end;
+
+procedure TSerializationFacade.DeSerialize<T>(const AValue: T; const ACustomDeserializer: IDeSerializer<T>);
+begin
+  ACustomDeserializer.Deserialize(AValue);
+end;
+
+{ TSerialization }
+
+class function TSerialization.CreateSerializationFacade: TSerializationFacade;
+begin
+  Result := TSerializationFacade.Create;
+end;
+
+class function TSerialization.CreateSerializationFacadeDecorator: ISerializationFacade;
+begin
+  Result := TSerializationFacadeLifecycleDecorator.Create;
 end;
 
 end.

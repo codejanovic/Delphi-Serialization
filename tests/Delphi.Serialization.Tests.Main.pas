@@ -28,7 +28,9 @@ uses
   Delphi.Serialization,
   System.SysUtils,
   Vcl.Forms,
-  System.IOUtils, Delphi.Serialization.Tests.Testdata, Spring.Container,
+  System.IOUtils,
+  Delphi.Serialization.Tests.Testdata,
+  Spring.Container,
   System.Rtti;
 
 function TMainTests.GetFilePathToTestFile(const AFileName: string): string;
@@ -89,7 +91,7 @@ begin
     Assert.AreEqual(LCustomer.FirstName, TSerializationTestdata.DEFAULT_CUSTOMER_FIRSTNAME);
     Assert.AreEqual(LCustomer.LastName, TSerializationTestdata.DEFAULT_CUSTOMER_LASTNAME);
     Assert.AreEqual(LCustomer.CustomerId, TSerializationTestdata.DEFAULT_CUSTOMER_CUSTOMERID);
-    Assert.AreEqual(LCustomer.HasDefaultAddress, false);
+    Assert.AreEqual(LCustomer.HasDefaultAddress, true);
     Assert.AreEqual(LCustomer.DefaultAddress.Name, TSerializationTestdata.DEFAULT_ADDRESS_NAME);
     Assert.AreEqual(LCustomer.DefaultAddress.Street, TSerializationTestdata.DEFAULT_ADDRESS_STREET);
     Assert.AreEqual(LCustomer.DefaultAddress.PostalCode, TSerializationTestdata.DEFAULT_ADDRESS_POSTALCODE);
