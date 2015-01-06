@@ -82,7 +82,9 @@ implementation
 uses
   System.SysUtils,
   DSharp.Core.Reflection,
-  System.TypInfo, Spring, Spring.SystemUtils;
+  System.TypInfo,
+  Spring,
+  Delphi.Serialization.ExceptionHelper;
 
 procedure TSerializer<T>.Serialize(const AValue: T);
 var
@@ -357,7 +359,7 @@ begin
     tkInterface:
       WriteObject(TValue.From<TObject>( AValue.AsInterface AS TObject ), AElementName);
     else
-       raise ESerializationTypeNotSupportedError.Create('Value-Kind "' + TEnum.GetName<TTypeKind>(AValue.Kind) + '" not supported');
+      Guard.RaiseSerializationTypeNotSupportedException(AValue);
   end;
 end;
 

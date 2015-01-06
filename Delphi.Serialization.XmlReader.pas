@@ -73,7 +73,7 @@ uses
   XMLDoc,
   XSBuiltIns,
   System.IOUtils,
-  Spring;
+  Spring, Delphi.Serialization.ExceptionHelper;
 
 { TXmlReader }
 
@@ -152,7 +152,7 @@ begin
   if IsStartElement(AName) then
     ReadStartElement()
   else
-    raise EDeserializerError.CreateFmt('Element "%s" not found', [AName]);
+    Guard.RaiseDeserializerException('Element "%s" not found', [AName]);
 end;
 
 

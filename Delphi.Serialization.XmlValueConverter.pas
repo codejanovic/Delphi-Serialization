@@ -49,8 +49,6 @@ type
     function ConvertStringToDateTime(const AValue: String): TDateTime;
     function ConvertStringToTime(const AValue: String): TTime;
     function ConvertStringToFloat(const AValue: String): Extended;
-
-    procedure RaisePrimitiveValueNotSupportedError(const AValue: TTypeKind);
   public
     constructor Create;
 
@@ -65,7 +63,9 @@ uses
   Soap.XSBuiltIns,
   System.Variants,
   System.TypInfo,
-  DSharp.Core.Reflection;
+  DSharp.Core.Reflection,
+  Delphi.Serialization.ExceptionHelper,
+  Spring;
 
 { TXmlValueConverter }
 
@@ -120,11 +120,6 @@ begin
   FDefaultFormatSettings.ShortDateFormat := 'yyyy-mm-dd';
 end;
 
-procedure TXmlPrimitiveValueConverter.RaisePrimitiveValueNotSupportedError(const AValue: TTypeKind);
-begin
-  raise EPrimitiveValueNotSupportedError.Create('Value-Kind "' + TEnum.GetName<TTypeKind>(AValue) + '" not supported');
-end;
-
 procedure TXmlPrimitiveValueConverter.StringToValue(const AStringValue: String; var AValue: TValue);
 begin
  case AValue.Kind of
@@ -170,7 +165,7 @@ begin
       TValue.Make(StringToSet(AValue.TypeInfo, AStringValue), AValue.TypeInfo, AValue);
     end;
     else
-      RaisePrimitiveValueNotSupportedError(AValue.Kind);
+      Guard.RaisePrimitiveValueNotSupportedException(AValue);
   end;
 end;
 
@@ -202,7 +197,7 @@ begin
           Result := ConvertFloatToString(AValue.AsExtended)
       end;
     else
-      RaisePrimitiveValueNotSupportedError(AValue.Kind);
+      Guard.RaisePrimitiveValueNotSupportedException(AValue);
   end;
 end;
 

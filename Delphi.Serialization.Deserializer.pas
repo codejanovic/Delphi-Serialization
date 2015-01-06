@@ -62,7 +62,8 @@ uses
   System.TypInfo,
   System.SysUtils,
   DSharp.Core.Reflection,
-  Spring, System.Variants, Spring.SystemUtils;
+  Spring,
+  System.Variants, Delphi.Serialization.ExceptionHelper;
 
 
 function TDeserializer<T>.FindPropertyByElementName(AObject: TObject;
@@ -281,7 +282,7 @@ begin
     tkMethod:
       ReadEvent(AValue);
     else
-      raise ESerializationTypeNotSupportedError.Create('Value-Kind "' + TEnum.GetName<TTypeKind>(AValue.Kind) + '" not supported');
+      Guard.RaiseSerializationTypeNotSupportedException(AValue);
   end;
 end;
 
