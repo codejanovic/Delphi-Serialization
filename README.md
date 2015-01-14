@@ -1,4 +1,6 @@
 #Delphi-Serialization
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/traffino/Delphi-Serialization?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Delphi-Serialization provides functionality for serializing and deserializing Objects to (currently only) XML.
 ### Roadmap (rough)
 - more testing
