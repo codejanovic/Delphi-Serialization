@@ -38,6 +38,7 @@ uses
 
 CONST
   ATTRIBUTE_SERIALVERSIONUID = 'serialVersionUID';
+  ATTRIBUTE_REFERENCE = 'reference';
 
 type
   EDeserializerError = class(Exception);
@@ -100,6 +101,18 @@ type
     procedure WriteNodeAttributeOfCurrentNode(const AAttributeName: String; const AAttributeValue: TValue);
   end;
 
+  ITypeResolver = interface
+    ['{C77219C1-DAE1-417C-9781-F18346027F3A}']
+    function Resolve(const ASerialVersionUID: String; const AReference: String): TValue;
+    function ResolveType(const ASerialVersionUID: String): TRttiInstanceType;
+  end;
+
+  ITypeRegistrator = interface(ITypeResolver)
+    ['{F0B1632B-5B58-4F13-AB63-2EF20236F03D}']
+    procedure RegisterType(const ASerialVersionUID: String; const AValue: TRttiInstanceType); overload;
+    procedure RegisterType(const AValue: TRttiInstanceType); overload;
+  end;
+
   TSerializationFacade = class;
   //TODO: logger needed?
   ISerializer<T> = interface
@@ -138,6 +151,7 @@ type
     function CreateDefaultSerializer<T>(const AFormatWriter: ISerializationFormatWriter): ISerializer<T>;
     function CreateDefaultFormatReader(const AInput: TStream; const AValueConverter: ISerializationFormatPrimitiveValueConverter): ISerializationFormatReader;
     function CreateDefaultDeserializer<T>(const AFormatReader: ISerializationFormatReader): IDeserializer<T>;
+    function CreateDefaultTypeFactory: ITypeRegistrator;
   public
     procedure Serialize<T>(const AValue: T; const AOutput: TStream); overload;
     procedure Serialize<T>(const AValue: T; const ACustomFormatWriter: ISerializationFormatWriter); overload;
@@ -162,7 +176,9 @@ uses
   Delphi.Serialization.XmlWriter,
   Delphi.Serialization.XmlReader,
   Delphi.Serialization.Serializer,
-  Delphi.Serialization.Deserializer;
+  Delphi.Serialization.Deserializer,
+  Delphi.Serialization.TypeFactory,
+  Delphi.Serialization.RttiTypeResolver;
 
 
 { XmlElementAttribute }
@@ -221,10 +237,12 @@ begin
   LDefaultDeserializer.Deserialize(AValue);
 end;
 
-function TSerializationFacade.CreateDefaultDeserializer<T>(
-  const AFormatReader: ISerializationFormatReader): IDeserializer<T>;
+function TSerializationFacade.CreateDefaultDeserializer<T>(const AFormatReader: ISerializationFormatReader): IDeserializer<T>;
+var
+  LTypeResolver: ITypeResolver;
 begin
-  Result := TDeserializer<T>.Create(AFormatReader);
+  LTypeResolver := CreateDefaultTypeFactory;
+  Result := TDeserializer<T>.Create(LTypeResolver, AFormatReader);
 end;
 
 function TSerializationFacade.CreateDefaultFormatReader(
@@ -299,6 +317,14 @@ end;
 class function TSerialization.CreateSerializationFacadeDecorator: ISerializationFacade;
 begin
   Result := TSerializationFacadeLifecycleDecorator.Create;
+end;
+
+function TSerializationFacade.CreateDefaultTypeFactory: ITypeRegistrator;
+var
+  LRttiFallbackResolver: ITypeResolver;
+begin
+  LRttiFallbackResolver := TRttiTypeResolver.Create;
+  Result := TTypeFactory.Create(LRttiFallbackResolver);
 end;
 
 end.

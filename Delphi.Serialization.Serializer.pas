@@ -48,10 +48,12 @@ type
     procedure WriteObjectStart(const AValue: TValue; const AElementName: String);
     procedure WriteObjectEnd(const AValue: TValue; const AElementName: String);
     procedure WriteSerialVersionUID(const AValue: TValue);
+    procedure WriteObjectReference(const AValue: TValue);
     procedure WriteValue(const AValue: TValue; const AElementName: String);
 
     function GetObjectElementName(const AValue: TValue; const AElementName: string = ''): String;
     function GetSerialVersionUID(const AValue: TValue): String;
+    function GetObjectReference(const AValue: TValue): String;
 
     function IsIgnored(const AValue: TRttiProperty): boolean; overload;
     function IsIgnored(const AValue: TRttiField): boolean; overload;
@@ -132,6 +134,11 @@ begin
   LObject := AValue.AsObject;
   if LObject.GetType.TryGetCustomAttribute<SerialVersionUIDAttribute>(LSerialVersionUIDAttribute) then
     Exit(LSerialVersionUIDAttribute.SerialVersionUID);
+end;
+
+function TSerializer<T>.GetObjectReference(const AValue: TValue): String;
+begin
+  Result := IntToHex(Integer(AValue.GetReferenceToRawData), 6);
 end;
 
 function TSerializer<T>.IsIgnored(const AValue: TRttiProperty): boolean;
@@ -323,6 +330,7 @@ begin
   objectElementName := GetObjectElementName(AValue, AElementName);
   FFormatWriter.WriteStartElement(objectElementName);
   WriteSerialVersionUID(AValue);
+  WriteObjectReference(AValue);
 end;
 
 procedure TSerializer<T>.WritePrimitive(const AValue: TValue; const AElementName: string);
@@ -335,6 +343,11 @@ end;
 procedure TSerializer<T>.WriteSerialVersionUID(const AValue: TValue);
 begin
   FFormatWriter.WriteNodeAttributeOfCurrentNode(ATTRIBUTE_SERIALVERSIONUID, GetSerialVersionUID(AValue));
+end;
+
+procedure TSerializer<T>.WriteObjectReference(const AValue: TValue);
+begin
+  FFormatWriter.WriteNodeAttributeOfCurrentNode(ATTRIBUTE_REFERENCE, GetObjectReference(AValue));
 end;
 
 procedure TSerializer<T>.WriteValue(const AValue: TValue; const AElementName: String);

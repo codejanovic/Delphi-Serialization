@@ -35,12 +35,11 @@ uses
   System.Rtti;
 
 type
-  //TODO: restore based on reference info
-  //TODO: restore based on serialVersionUID
   TDeserializer<T> = class(TInterfacedObject, IDeserializer<T>)
   strict protected
     FRoot: TObject;
     FFormatReader: ISerializationFormatReader;
+    FTypeResolver: ITypeResolver;
 
     procedure CreateObject(var AValue: TValue);
     procedure ReadEnumerable(var AValue: TValue);
@@ -52,7 +51,7 @@ type
     function FindFieldByElementName(AObject: TObject; const AElementName: string; out AField: TRttiField): Boolean;
     function FindTypeBySerialVersionUID(const ASerialVersionUID: string; out AType: TRttiType): Boolean;
   public
-    constructor Create(const AFormatReader: ISerializationFormatReader);
+    constructor Create(const ATypeResolver: ITypeResolver; const AFormatReader: ISerializationFormatReader);
     procedure Deserialize(const AValue: T);
   end;
 
@@ -63,8 +62,17 @@ uses
   System.SysUtils,
   DSharp.Core.Reflection,
   Spring,
-  System.Variants, Delphi.Serialization.ExceptionHelper;
+  System.Variants,
+  Delphi.Serialization.ExceptionHelper;
 
+constructor TDeserializer<T>.Create(const ATypeResolver: ITypeResolver; const AFormatReader: ISerializationFormatReader);
+begin
+  Guard.CheckNotNull(AFormatReader, 'SerializationFormatReader');
+  Guard.CheckNotNull(ATypeResolver, 'TypeResolver');
+
+  FTypeResolver := ATypeResolver;
+  FFormatReader := AFormatReader;
+end;
 
 function TDeserializer<T>.FindPropertyByElementName(AObject: TObject;
     const AElementName: string; out AProperty: TRttiProperty): Boolean;
@@ -149,19 +157,15 @@ var
   LMethod: TRttiMethod;
   LArgs: TArray<TValue>;
   LSVUID: String;
+  LReference: String;
 begin
   LSVUID := FFormatReader.ReadCurrentNodeAttributeValue(ATTRIBUTE_SERIALVERSIONUID);
+  LReference := FFormatReader.ReadCurrentNodeAttributeValue(ATTRIBUTE_REFERENCE);
 
-  if FindTypeBySerialVersionUID(LSVUID, LType)
-    and LType.TryGetStandardConstructor(LMethod) then
-  begin
-    SetLength(LArgs, LMethod.ParameterCount);
-    AValue := LMethod.Invoke(LType.AsInstance.MetaclassType, LArgs);
-    if not Assigned(FRoot) then
-    begin
-      FRoot := AValue.AsObject();
-    end;
-  end;
+  AValue := FTypeResolver.Resolve(LSVUID, LReference);
+
+  if not Assigned(FRoot) then
+    FRoot := AValue.AsObject();
 end;
 
 procedure TDeserializer<T>.ReadEnumerable(var AValue: TValue);
@@ -284,12 +288,6 @@ begin
     else
       Guard.RaiseSerializationTypeNotSupportedException(AValue);
   end;
-end;
-
-constructor TDeserializer<T>.Create(const AFormatReader: ISerializationFormatReader);
-begin
-  Guard.CheckNotNull(AFormatReader, 'SerializationFormatReader');
-  FFormatReader := AFormatReader;
 end;
 
 end.

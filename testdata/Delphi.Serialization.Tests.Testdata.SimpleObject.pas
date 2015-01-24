@@ -10,7 +10,7 @@ uses
 type
   //TODO: Error on invalid Serialversionuid (none/dup)
   [Element('Addressdata')]
-  [SerialVersionUID('{3D4E2CC7-B7CE-4235-A7D2-86CDB6A69080}')]
+  [SerialVersionUID('{75076476-709A-4371-9DBC-2AAD1A4CA73B}')]
   TAddress = class(TObject)
   strict protected
     FName: string;
@@ -42,7 +42,7 @@ type
   end;
 
   [Element('Customerdata')]
-  [SerialVersionUID('{5BA74FD6-D930-41BE-956D-61CDA59305A4}')]
+  [SerialVersionUID('{65DF7B79-4016-41EB-8BA1-45AD5855B39A}')]
   TCustomer = class(TObject)
   strict protected
     FFirstName: string;
@@ -73,6 +73,10 @@ type
     [Transient]
     property HasDefaultAddress: boolean read GetHasDefaultAddress;
     property RegistrationDate: TDateTime read GetRegistrationDate write SetRegistrationDate;
+  end;
+
+  TObjectWithoutSerialVersionUID = class(TObject)
+
   end;
 
 implementation

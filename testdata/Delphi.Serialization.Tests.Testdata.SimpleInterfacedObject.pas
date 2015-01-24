@@ -75,6 +75,13 @@ type
     property RegistrationDate: TDateTime read GetRegistrationDate write SetRegistrationDate;
   end;
 
+  TInterfacedObjectWithoutSerialVersionUID = class(TInterfacedObject, IAddress)
+  strict protected
+    FAddressDelegate: IAddress;
+    function GetAddressDelegate: IAddress;
+    property AddressDelegate: IAddress read GetAddressDelegate implements IAddress;
+  end;
+
 implementation
 
 uses
@@ -187,6 +194,16 @@ end;
 procedure TAddress.SetStreet(const AValue: string);
 begin
   FStreet := AValue;
+end;
+
+{ TInterfacedObjectWithoutSerialVersionUID }
+
+function TInterfacedObjectWithoutSerialVersionUID.GetAddressDelegate: IAddress;
+begin
+  if not Assigned(FAddressDelegate) then
+    FAddressDelegate := TAddress.Create;
+
+  Result := FAddressDelegate
 end;
 
 end.

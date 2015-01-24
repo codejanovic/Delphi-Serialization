@@ -17,7 +17,11 @@ uses
   Delphi.Serialization.Tests.Testdata.SimpleObject in '..\testdata\Delphi.Serialization.Tests.Testdata.SimpleObject.pas',
   Delphi.Serialization.XmlValueConverter in '..\Delphi.Serialization.XmlValueConverter.pas',
   Delphi.Serialization.Tests.Testdata in '..\testdata\Delphi.Serialization.Tests.Testdata.pas',
-  Delphi.Serialization.ExceptionHelper in '..\Delphi.Serialization.ExceptionHelper.pas';
+  Delphi.Serialization.ExceptionHelper in '..\Delphi.Serialization.ExceptionHelper.pas',
+  Delphi.Serialization.TypeFactory in '..\Delphi.Serialization.TypeFactory.pas',
+  Delphi.Serialization.Tests.TypeFactory in '..\tests\Delphi.Serialization.Tests.TypeFactory.pas',
+  Delphi.Serialization.Tests.TypeFactory.UseCases in '..\tests\Delphi.Serialization.Tests.TypeFactory.UseCases.pas',
+  Delphi.Serialization.RttiTypeResolver in '..\Delphi.Serialization.RttiTypeResolver.pas';
 
 var
   runner : ITestRunner;
