@@ -70,12 +70,12 @@ function TDeserializer<T>.FindPropertyByElementName(AObject: TObject;
     const AElementName: string; out AProperty: TRttiProperty): Boolean;
 var
   LProperty: TRttiProperty;
-  LAttribute: ElementAttribute;
+  LAttribute: ElementEntityAttribute;
 begin
   Result := False;
   for LProperty in AObject.GetProperties do
   begin
-    if LProperty.TryGetCustomAttribute<ElementAttribute>(LAttribute)
+    if LProperty.TryGetCustomAttribute<ElementEntityAttribute>(LAttribute)
       and SameText(LAttribute.ElementName, AElementName) then
     begin
       AProperty := LProperty;
@@ -117,12 +117,12 @@ function TDeserializer<T>.FindFieldByElementName(AObject: TObject;
   const AElementName: string; out AField: TRttiField): Boolean;
 var
   LField: TRttiField;
-  LAttribute: ElementAttribute;
+  LAttribute: ElementEntityAttribute;
 begin
   Result := False;
   for LField in AObject.GetFields do
   begin
-    if LField.TryGetCustomAttribute<ElementAttribute>(LAttribute)
+    if LField.TryGetCustomAttribute<ElementEntityAttribute>(LAttribute)
       and SameText(LAttribute.ElementName, AElementName) then
     begin
       AField := LField;

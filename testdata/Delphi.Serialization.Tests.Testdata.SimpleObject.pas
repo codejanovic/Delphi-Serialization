@@ -9,7 +9,7 @@ uses
 
 type
   //TODO: Error on invalid Serialversionuid (none/dup)
-  [Element('Addressdata')]
+  [ElementEntity('Addressdata')]
   [SerialVersionUID('{3D4E2CC7-B7CE-4235-A7D2-86CDB6A69080}')]
   TAddress = class(TObject)
   strict protected
@@ -32,16 +32,16 @@ type
     procedure SetCountry(const AValue: string);
 
   public
-    [Element('ContactPerson')]
+    [ElementEntity('ContactPerson')]
     property Name: string read GetName write SetName;
     property Street: string read GetStreet write SetStreet;
-    [Element('Zipcode')]
+    [ElementEntity('Zipcode')]
     property PostalCode: Integer read GetPostalCode write SetPostalCode;
     property City: String read GetCity write SetCity;
     property Country: string read GetCountry write SetCountry;
   end;
 
-  [Element('Customerdata')]
+  [ElementEntity('Customerdata')]
   [SerialVersionUID('{5BA74FD6-D930-41BE-956D-61CDA59305A4}')]
   TCustomer = class(TObject)
   strict protected
@@ -70,7 +70,7 @@ type
     property LastName: string read GetLastName write SetLastName;
     property CustomerId: Integer read GetCustomerId write SetCustomerId;
     property DefaultAddress: IAddress read GetDefaultAddress write SetDefaultAddress;
-    [Transient]
+    [TransientEntity]
     property HasDefaultAddress: boolean read GetHasDefaultAddress;
     property RegistrationDate: TDateTime read GetRegistrationDate write SetRegistrationDate;
   end;

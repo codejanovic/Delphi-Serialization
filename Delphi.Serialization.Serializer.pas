@@ -110,13 +110,13 @@ end;
 function TSerializer<T>.GetObjectElementName(const AValue: TValue; const AElementName: string): String;
 var
   LObject: TObject;
-  LElementAttribute: ElementAttribute;
+  LElementAttribute: ElementEntityAttribute;
 begin
   if not AElementName.IsEmpty then
     Exit(AElementName);
 
   LObject := AValue.AsObject;
-  if LObject.GetType.TryGetCustomAttribute<ElementAttribute>(LElementAttribute) then
+  if LObject.GetType.TryGetCustomAttribute<ElementEntityAttribute>(LElementAttribute) then
     Exit(LElementAttribute.ElementName);
 
   // Fallback
@@ -149,12 +149,12 @@ end;
 
 function TSerializer<T>.IsIgnoredByAttribute(const AValue: TRttiProperty): boolean;
 begin
-  Result := AValue.IsDefined<TransientAttribute>;
+  Result := AValue.IsDefined<TransientEntityAttribute>;
 end;
 
 function TSerializer<T>.IsIgnoredByAttribute(const AValue: TRttiField): boolean;
 begin
-  Result := AValue.IsDefined<TransientAttribute>;
+  Result := AValue.IsDefined<TransientEntityAttribute>;
 end;
 
 function TSerializer<T>.IsIgnoredByBaseImpl(const AValue: TRttiProperty): boolean;
@@ -267,7 +267,7 @@ var
   LObject: TObject;
   LProperty: TRttiProperty;
   LValue: TValue;
-  LAttribute: ElementAttribute;
+  LAttribute: ElementEntityAttribute;
   LField: TRttiField;
 begin
   LObject := AValue.AsObject;
@@ -285,7 +285,7 @@ begin
     if not IsValid(LProperty, LValue) then
       Continue;
 
-    if LProperty.TryGetCustomAttribute<ElementAttribute>(LAttribute) then
+    if LProperty.TryGetCustomAttribute<ElementEntityAttribute>(LAttribute) then
       WriteValue(LValue, LAttribute.ElementName)
     else
       WriteValue(LValue, LProperty.Name);
@@ -300,7 +300,7 @@ begin
     if not IsValid(LField, LValue) then
       Continue;
 
-    if LField.TryGetCustomAttribute<ElementAttribute>(LAttribute) then
+    if LField.TryGetCustomAttribute<ElementEntityAttribute>(LAttribute) then
       WriteValue(LValue, LAttribute.ElementName)
     else
       WriteValue(LValue, LField.Name);

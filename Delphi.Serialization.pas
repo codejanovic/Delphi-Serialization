@@ -46,10 +46,10 @@ type
   ESerializationTypeNotSupportedError = class(Exception);
 
   {$REGION 'Attributes'}
-  TransientAttribute = class(TCustomAttribute)
+  TransientEntityAttribute = class(TCustomAttribute)
   end;
-  //TODO: Error on invalid names (eg with whitespaces)
-  ElementAttribute = class(TCustomAttribute)
+
+  ElementEntityAttribute = class(TCustomAttribute)
   private
     FElementName: string;
   public
@@ -167,7 +167,7 @@ uses
 
 { XmlElementAttribute }
 
-constructor ElementAttribute.Create(const AElementName: string);
+constructor ElementEntityAttribute.Create(const AElementName: string);
 begin
   FElementName := AElementName;
 end;
